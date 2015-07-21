@@ -1,0 +1,293 @@
+.\" (c) 2004-2005 Zeljko Vrba <zvrba@globalnet.hr>
+.\" 
+.\" Permission is hereby granted, free of charge, to any person obtaining
+.\" a copy of this software and associated documentation files (the
+.\" "Software"), to deal in the Software without restriction, including
+.\" without limitation the rights to use, copy, modify, merge, publish,
+.\" distribute, sublicense, and/or sell copies of the Software, and to
+.\" permit persons to whom the Software is furnished to do so, subject to
+.\" the following conditions:
+.\" 
+.\" The above copyright notice and this permission notice shall be
+.\" included in all copies or substantial portions of the Software.
+.\" 
+.\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+.\" EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+.\" MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+.\" IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+.\" CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+.\" TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+.\" SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+.Dd April 4, 2005
+.Dt secpwgen 1
+.Os
+.Sh NAME
+.Nm secpwgen
+.Nd "secure password generator"
+.Sh SYNOPSIS
+.Nm
+.Fl p[e]
+.Ar n
+.Nm
+.Fl s[e]
+.Ar n
+.Nm
+.Fl A[adhsy]
+.Ar n
+.Nm
+.Fl r
+.Ar n
+.Nm
+.Fl k
+.Ar n
+.Sh DESCRIPTION
+The
+.Nm
+command is used to generate secure, high-entropy passwords by
+several methods. It aims to generate passwords that are strong and secure
+enough for cryptographic purposes (e.g. for protecting keys). The exact
+method is chosen by the options listed below:
+.Bl -tag -width ".Fl d"
+.It Fl p
+Diceware method with the diceware dictionary.
+.Ar n
+is the number of words in the password. If the method is specified as
+.Fl pe
+then an enhanced password is generated.
+.It Fl s
+Same as
+.Fl p
+and
+.Fl pe
+but with the S/Key dictionary.
+.It Fl A
+Generates an ASCII password of
+.Ar n
+parts. At least one letter after A is mandatory. Each letter incorporates
+additional set of components from which random elements are drawn. See the
+exact method description below.
+.It Fl r
+Generates a random password and outputs it as base-64 encoded string.
+.Ar n
+is the desired number of bits of entropy. It will be rounded up to the
+next higher multiple of 8.
+.It Fl k
+Same as
+.Fl r
+but uses the "koremutake" encoding instead of base 64 encoding. Koremutake
+is yet another way of producing pronouncible phrases from long bit strings.
+.It Ar n
+Specifies the size of the password. The exact meaning depends on the
+method and is described above in options.
+.El
+.Pp
+The program outputs the generated passphrase and a calculated entropy
+of the passphrase.
+.Sh METHOD DESCRIPTIONS
+The following subsections give detailed explanations of the password
+generation methods.
+.Ss DICEWARE METHOD
+This method selects
+.Ar n
+random words from the given dictionary. The diceware dictionary contains
+8192 words, and the S/Key dictionary contains 2048 words. Both dictionaries
+have been taken from the internet (see references).
+.Ss ENHANCED DICEWARE METHOD
+Extends the diceware method by chosing a random letter in each word
+and replacing that letter with one of 32 special symbols and 4 upper-case
+letters (all words in the dictionary are lower-case).
+.Ss ASCII METHOD
+Draws
+.Ar n
+random elements from randomly chosen allowed sets and concatenates
+them in a single string. The allowed sets are specified by the letters
+following the
+.Fl A
+flag and have these meanings:
+.Pp
+.Bl -tag -width "X" -compact
+.It a
+alphanumeric characters
+.It d
+decimal digits
+.It h
+hexadecimal digits
+.It s
+special characters
+.It y
+3- and 4-letter syllables
+.El
+.Pp
+Note that these sets are not all mutually exclusive. Such combinations
+will have the same effect as specifying a single "larger" set.
+.Ss RANDOM METHODS
+Rounds
+.Ar n
+up to the next higher multiple of 8 (7 in case of koremutake) bits (does
+nothing if it is already a multiple) and generates
+.Ar n/8
+(
+.Ar n/7
+)
+random bytes. The resulting passphrase is output as a base-64 or koremutake
+encoded string.
+.Pp
+In case of koremutake, for programming simplicity, each random byte is taken
+mod 128 and looked up in the syllable dictionary. Since the random number
+generator is assumed to be secure, i.e. generates uniformly distributed
+radnom numbers, there is no weakness by using the mod operation.
+.Sh SECURITY
+First of all, a
+.Sy warning:
+as recommended on the diceware site, NEVER actually put spaces between
+individual words of the generated passphrase. On many keyboards the space
+key has very distinctive sound which makes possible for the attacker to
+learn the number of words and possibly the number of letters in each word
+(in correct order). These facts divulge much information and make passphrase
+easier to guess.
+.Pp
+In the author's opinion the program is written very carefully so that the
+generated passphrase can't end up accidentaly on the swap or core file. The
+steps taken in securing the program:
+.Bl -bullet
+.It
+Dedicating a separate block of memory for all confidential data.
+.It
+Zeroing that block of memory upon program exit (by registering the atexit()
+function).
+.It
+Locking all programs' memory with mlockall(MCL_FUTURE), if possible (the
+program must be run with root privileges or installed setuid root to be
+able to do that).
+.Pp
+On some systems, locking memory with mlockall causes the program to fail
+(because some library routines try to allocate too much memory). In that
+case mlock is used with reduced security: the stack is not locked in memory.
+.It
+Disabling core-dumps in the event of crash.
+.It
+Cryptographically strong random number generator (using OpenSSL or cryptlib).
+The exact method for generation is described in its respective source file.
+.El
+.Pp
+The strength of the chain equals the strength of its weakest link. You should
+put as much trust in this program as you trust the implementation of any of
+the following used components: C library, the cryptographic toolkit used for
+random number generation, the kernel, and, ultimately, the system
+administrator (although not a SW component :), a malicious sysadmin can modify
+the kernel or system libraries to log somewhere all output of a program).
+.Pp
+You should build the program as statically linked, if at all possible. There
+are numerous ways in which dynamic linking can be used to subvert this
+programs' security. Unfortunately, there is no reliable nor portable way to
+discover at run-time if the program is statically or dynamically linked.
+.Ss OPENSSL NOTES
+This program does not take any steps to initialize the entropy pool. OpenSSL
+uses the system-provided /dev/[u]random as the source of randomness.
+OpenSSL should report an error on systems that do not provide the /dev/random
+device. If you are sure that your system does not support these
+devices (most notably, WIN32 systems) and the program does not report an
+error then
+.Sy do not use it
+if you want really secure and unguessable passwords. There are many real-life
+examples where the system security was compromised because of poor random
+number generators.
+.Ss CRYPTLIB NOTES
+For maximum security, it is recommended to use cryptlib if at all possible.
+Citing its manual, it is designed around a B3 kernel and tries very hard to
+protect and sanitize all sensitive data (including locking it in memory if
+possible). Also, there are no issues about initializing the entropy pool.
+.Sh EXAMPLES
+Generate an 4-word enhanced passphrase from the diceware dictionary:
+.Nm
+command:
+.Pp
+.Dl "secpwgen -pe 4"
+.Pp
+gives the following typical output when run without root privileges:
+.Pp
+.Bd -literal -unfilled -offset indent
+mlockall: Operation not permitted
+WARNING: using insecure memory.
+----------------
+ha'e ap.x ro|ue si+th  ;ENTROPY=81.32 bits
+----------------
+INFO: zeroing memory.
+.Ed
+.Sh DIAGNOSTICS
+Exit status is 0 on success, and 1 if the command
+encounters a fatal error. Informational messages are omitted from this
+listing. Their meaning can be deduced from the source.
+.Bl -diag
+.It "WARNING: using insecure memory."
+This message is not only pertained to memory; for example it can happen that
+the program can't turn off core file generation. The exact cause is seen
+in system error messages preceding the warning.
+.Pp
+If this message is printed, you must assume that the generated password can
+end up in plain text on the swap device, core file or other from where it
+could be retrieved by an adversary.
+.It "FATAL: out of memory."
+Cannot allocate enough memory.
+.It "FATAL: system call failed. There is no way..."
+The program, if installed as SUID root, drops its root privileges
+as soon as it obtains secure memory. This didn't succeed, and
+because of documented buffer overflows (see the
+.Sx BUGS
+section below) the program refuses to execute. Executing a SUID
+program with the potential of buffer overflows is an extreme
+security risk.
+.It "FATAL: too small MAX_RANDOM_STATE_SIZE..."
+The MAX_RANDOM_STATE_SIZE macro in secure_memory.h should be enlarged
+to at least the size displayed after the message and the program
+recompiled.
+.It "FATAL: unhandled exception"
+This is a real bug in the program. Report this to the author
+along with the exact command-line arguments, the compiler used,
+operating system, etc. 
+.It "ERROR: some garbage left to cryptlib."
+This is an indication of the bug in the program. Report this to the author
+along with other data described above. Nothing "bad" happened; everything
+was properly cleaned by cryptlib on exit. It is just an indication that
+some objects were not freed by the program before shutting down cryptlib.
+.El
+.Sh SEE ALSO
+.Xr pwgen 1 ,
+.Xr mlockall 2
+.Rs
+.%T "Diceware Passphrase Home Page"
+.%O http://www.diceware.com
+.Re
+.Rs
+.%T "Koremutake encoding"
+.%O http://shorl.com/koremutake.php
+.Re
+.Rs
+.%T "RFC1760: The S/KEY One-Time Password System"
+.Re
+.Rs
+.%T "RFC2289: A One-Time Password System"
+.Re
+.Rs
+.%A Peter Gutmann
+.%T cryptlib
+.%O http://www.cs.auckland.ac.nz/~pgut001/cryptlib/
+.Re
+.Rs
+.%T OpenSSL
+.%O http://www.openssl.org
+.Re
+.Sh AUTHORS
+The secpwgen program and this manual page were written by
+.An Zeljko Vrba Aq zvrba@globalnet.hr .
+.Sh BUGS
+The program
+.Sy will crash
+if
+.Ar n
+is too big. No checks are made for the internal buffer sizes. However, since
+this program is intended to be used by humans who must memorize their
+passphrases, this is not an issue. The program works correctly for "reasonable"
+sizes of
+.Ar n
+(e.g. less than 256).

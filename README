@@ -1,0 +1,27 @@
+PREREQUISITES
+=============
+You need OpenSSL at least 0.9.7 OR cryptlib 3.1 or later.
+
+HOW
+===
+Copy Makefile.proto to Makefile and edit it according to instructions found
+there.
+
+USAGE
+=====
+Read the secpwgen man page.
+
+NOTE ON VERSIONING
+==================
+Unlike many open-source packages, this program's versioning follows the
+normal DECIMAL NUMBER comparison rules: the following example shows the
+ordering of versions: 0.9 < 1.0 < 1.1 < 1.2 < 1.21 < 1.22xx < 1.3 (some
+time in the future) because the same relations hold for ordinary decimals.
+
+TODO
+====
+Add an option to specify path to EGD socket. This will enable the program to
+provide secure passwords even on crippled systems (with no /dev/{u,}random)
+provided EGD (entropy gathering daemon) is running.
+
+Call OpenSSL Win32 specific function to init the entropy pool.

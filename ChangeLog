@@ -1,0 +1,36 @@
+Changes in 1.3
+* Added koremutake method for pronouncible password generation.
+* Moved to MIT license
+
+Changes in 1.2
+* Added cryptlib support
+
+* Added an option to compile with mlock() instead of mlockall().
+  - mlockall() caused problems on some Linux 2.6 distros because it would
+    succeed even for ordinary users. some library component would then
+    try to allocate too much memory which would exceed the process'
+    resource limits for locked memory. being unable to allocate memory has
+    resulted in a crash.
+
+* Minor code improvements:
+  - uses mprotect(PROT_NONE) on the last page of secure memory so that the
+    segmentation fault is guaranteed on buffer overflow
+  - minor cleanups
+
+* Updated manpage
+
+Changes in 1.1 
+* Major security improvements:
+  - memory locking
+  - zeroing "secure" memory on exit
+  - disabling core dumps
+  - dropping root privileges after memory locking
+  - printing a warning if security can't be completely set up
+
+* The program does no buffer length checking. If you try to generate too long
+  passphrase, the program will CRASH because of buffer overrun. For that
+  event to happen the passphrase would have to be long about 3000 characters.
+
+* Major code cleanups.
+
+* Added the manual page.
