@@ -43,7 +43,7 @@ extern unsigned int G_secure_memory_size;
 
 /**
  * Set up a chunk of secure memory.
- * 
+ *
  * @return	0 if at least one operation failed, 1 otherwise. In either case
  * the program execution can continue. There may be other side-effects such
  * as printing warnings. If there was a fatal error, this function will

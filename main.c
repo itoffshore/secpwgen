@@ -91,7 +91,7 @@ static unsigned int get_allowed_characters(const char *p)
 		}
 		++p;
 	}
-		
+
 	/* filter out some combinations for correct entropy estimation */
 	if(characters & chr_alphanumeric)
 		characters &= ~(chr_dec_digits | chr_hex_digits);
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 	Try {
 		secure_memory_init();
 		SRNG_init((struct SRNG_st*)G_secure_memory->random_state);
-		
+
 		if(atexit(exit_cleanup) < 0) {
 			fprintf(stderr, "FATAL: can't register cleanup handlers: \n");
 			perror("atexit");
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 					G_secure_memory->passphrase);
 		else if(!strncmp(argv[1], "-A", 2)) {
 			unsigned int characters = get_allowed_characters(argv[1]+2);
-			
+
 			if(!characters)
 				usage(argv[0]);
 			entropy = pwgen_ascii(

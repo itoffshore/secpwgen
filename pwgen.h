@@ -34,8 +34,8 @@
  * Generate passphrase by the 'diceware' method: a number of words selected
  * from a fixed list.
  *
- * @param	random_state	
- * @param	number_of_words	
+ * @param	random_state
+ * @param	number_of_words
  * @param	is_enhanced		If non-0, generates an enhanced passhprase.
  * @param	get_word		Pointer to the 'get word' function.
  * @param	dictionary_size	Number of words in the dictionary.

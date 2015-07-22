@@ -121,7 +121,7 @@ int secure_memory_init(void)
 	drop_privileges();
 	success &= disable_core_file();
 
-	if(!success) 
+	if(!success)
 		fprintf(stderr, "WARNING: using insecure memory.\n");
 
 	return success;
@@ -132,4 +132,3 @@ void secure_memory_destroy(void)
 	printf("INFO: zeroing memory.\n");
 	memset(G_secure_memory, 0, G_secure_memory_size - G_pagesize);
 }
-

@@ -145,7 +145,7 @@ float pwgen_diceware(
 
 		sprintf(password_buffer + output_index, "%s ", word);
 		entropy += log(dictionary_size) / log(2);
-		
+
 		if(is_enhanced) {
 			unsigned int char_pos, char_idx;
 
@@ -228,7 +228,7 @@ float pwgen_raw(
 		char 			*password_buffer)
 {
 	unsigned int number_of_bytes = ((number_of_bits-1)>>3)+1;
-	
+
 	SRNG_bytes(random_state, random_buffer, number_of_bytes);
 	base64_encode((unsigned char*)random_buffer, number_of_bytes,
 			password_buffer);
@@ -247,7 +247,7 @@ float pwgen_koremutake(
 {
 	unsigned int i, number_of_bytes = ((number_of_bits-1)/7)+1;
 	unsigned char *u8buf = (unsigned char*)random_buffer;
-	
+
 	SRNG_bytes(random_state, random_buffer, number_of_bytes);
 	*password_buffer = 0;
 	for(i = 0; i < number_of_bytes; i++)
@@ -307,7 +307,6 @@ retry:
 			}
 		}
 	}
-	
+
 	return entropy;
 }
-

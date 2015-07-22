@@ -35,7 +35,7 @@ static char rcsid[] = "$Id: secure_random_openssl.c 1 2005-11-13 20:23:40Z zvrba
 	This implementation uses the Blowfish cipher and low-level interfaces
 	usable both in SSLEay and OpenSSL (the latter is interesting in porting
 	to e.g. PalmOS).
-	
+
 	The generator gathers a small amount of true randomness from the system and
 	uses it to initialize the blowfish key and the randomness buffer. Further
 	random bytes are obtained by encrypting the previous contents of the
@@ -105,4 +105,3 @@ void SRNG_destroy(struct SRNG_st *st)
 	printf("INFO: destroying random number generator.\n");
 	memset(st, 0, sizeof(*st));
 }
-

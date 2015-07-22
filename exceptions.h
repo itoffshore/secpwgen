@@ -32,7 +32,7 @@ enum exception_code {
 	no_exception = 0,	/* used to exit the Try block */
 	out_of_memory_exception,
 	system_call_failed_exception,
-	
+
 	/* library exceptions */
 	lib_crypto_exception
 };

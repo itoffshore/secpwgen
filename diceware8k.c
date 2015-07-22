@@ -1,4 +1,4 @@
-/*  Diceware 8k Word List in C 
+/*  Diceware 8k Word List in C
 	Arnold G. Reinhold
 	2000-10-23 */
 

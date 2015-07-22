@@ -81,4 +81,3 @@ void SRNG_destroy(struct SRNG_st *st)
 	}
 	memset(st, 0, sizeof(*st));
 }
-
