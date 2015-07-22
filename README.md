@@ -1,2 +1,2 @@
 # secpwgen
-The sources for http://linux.die.net/man/1/secpwgen authored by http://zvrba.net/
+The sources for [secpwgen](http://linux.die.net/man/1/secpwgen) authored by [Željko Vrba](http://zvrba.net/)
