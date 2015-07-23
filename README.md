@@ -16,6 +16,6 @@ CONFIG_HW_RANDOM_VIA=m
 CONFIG_HW_RANDOM_VIRTIO=m
 CONFIG_HW_RANDOM_TPM=m
 ```
-[Diceware phrases](http://world.std.com/~reinhold/diceware.html) need to consist of [7 - 8 words to be unbreakble by current technology](http://arstechnica.com/information-technology/2014/03/diceware-passwords-now-need-six-random-words-to-thwart-hackers/)
-
 All 3 applications exist as packages in [Alpine Linux](http://pkgs.alpinelinux.org/packages?package=secpwgen&repo=all&arch=x86) which also has kernel support for `hw_random`
+
+[Diceware phrases](http://world.std.com/~reinhold/diceware.html) need to consist of [7 - 8 words to be unbreakble by current technology](http://arstechnica.com/information-technology/2014/03/diceware-passwords-now-need-six-random-words-to-thwart-hackers/)
